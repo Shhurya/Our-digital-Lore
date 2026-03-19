@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Forever Lore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    <style>
+        :root { --cover: #774c5e; --paper: #fffcf2; --accent: #ff85a1; }
+        body { background-color: #f8edeb; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; perspective: 2000px; font-family: 'Quicksand', sans-serif; overflow: hidden; }
+
+        .book { width: 320px; height: 450px; position: relative; transform-style: preserve-3d; transition: transform 1s; cursor: pointer; }
+        
+        .page { 
+            width: 100%; 
+            height: 100%; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            transform-origin: left; 
+            transform-style: preserve-3d; 
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1); 
+        }
+
+        /* Front and Back of each "leaf" */
+        .page-front, .page-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            backface-visibility: hidden;
+            box-sizing: border-box;
+            border-radius: 0 15px 15px 0;
+            border: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+            background: var(--paper);
+        }
+
+        .page-back {
+            transform: rotateY(180deg);
+            background: #fdfaf0; /* Slightly different shade for the back */
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Front Cover Specifics */
+        .cover-front {
+            background: var(--cover);
+            color: white;
+            z-index: 2;
+        }
+        .cover-front h1 { font-family: 'Dancing Script', cursive; font-size: 2rem; padding: 30px; border: 2px solid rgba(255,255,255,0.2); text-align: center; pointer-events: none;}
+
+        /* Content Styling */
+        .polaroid { background: white; padding: 10px 10px 20px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transform: rotate(-1deg); margin-bottom: 15px; width: 100%; box-sizing: border-box;}
+        .polaroid img { width: 100%; height: auto; border: 1px solid #eee; display: block; }
+        .date-tag { font-size: 0.8rem; color: #888; text-align: right; margin-top: 5px; font-family: sans-serif; font-weight: bold; }
+        .description { font-family: 'Dancing Script', cursive; font-size: 1.3rem; color: #555; line-height: 1.4; margin-top: 10px; }
+
+        .flipped { transform: rotateY(-180deg); }
+    </style>
+</head>
+<body>
+
+    <div class="book" id="book">
+        <div class="page" id="cover-leaf" style="z-index: 100;">
+            <div class="page-front cover-front">
+                <h1>Building towards a forever Lore..</h1>
+            </div>
+            <div class="page-back">
+                <p class="description">Turn the page to begin... ❤️</p>
+            </div>
+        </div>
+        
+        </div>
+
+    <script>
+        // --- ADD YOUR DATA HERE ---
+        const scrapbookData = [
+            {
+                image: "https://i.postimg.cc/LhDPzXGp/Shurya-3.jpg",
+                date: "OCT 12, 2025",
+                text: "The very first glimpse of us. I'm so glad this happened."
+            },
+            {
+                image: "https://via.placeholder.com/300x400",
+                date: "NOV 05, 2025",
+                text: "Second memory. You look so beautiful here."
+            },
+            {
+                image: "https://via.placeholder.com/300x400",
+                date: "DEC 20, 2025",
+                text: "Third memory. Building our lore, one day at a time."
+            }
+        ];
+
+        const book = document.getElementById('book');
+        let flippedCount = 0;
+
+        function buildBook() {
+            // We loop forward. The first item in array should be the first page under the cover.
+            scrapbookData.forEach((data, index) => {
+                const pageLeaf = document.createElement('div');
+                pageLeaf.className = 'page';
+                // Decrease Z-index so pages stack correctly (Cover is 100)
+                pageLeaf.style.zIndex = 99 - index;
+
+                pageLeaf.innerHTML = `
+                    <div class="page-front">
+                        <div class="polaroid">
+                            <img src="${data.image}">
+                            <div class="date-tag">${data.date}</div>
+                        </div>
+                        <p class="description">${data.text}</p>
+                    </div>
+                    <div class="page-back">
+                        <p class="description">Keep going... 🥰</p>
+                    </div>
+                `;
+                book.appendChild(pageLeaf);
+            });
+        }
+
+        book.addEventListener('click', () => {
+            const allLeaves = document.querySelectorAll('.page');
+            
+            if (flippedCount < allLeaves.length) {
+                allLeaves[flippedCount].classList.add('flipped');
+                flippedCount++;
+
+                if (flippedCount === 1) {
+                    book.style.transform = "translateX(160px)";
+                }
+            } else {
+                // Reset
+                allLeaves.forEach(leaf => leaf.classList.remove('flipped'));
+                book.style.transform = "translateX(0)";
+                flippedCount = 0;
+            }
+        });
+
+        buildBook();
+    </script>
+</body>
+</html>
