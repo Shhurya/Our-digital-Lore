@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Little glimpses of us..</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&family=Dancing+Script:wght@600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ff85a1; /* Softer Pink */
+            --bg: #fff5f6;
+            --accent: #774c5e; /* Mellow Plum */
+            --text: #5a5a5a;
+        }
+        
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            background: var(--bg); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+            text-align: center; 
+            overflow: hidden; 
+        }
+        
+        /* Softened Title */
+        h1 { 
+            font-family: 'Dancing Script', cursive;
+            color: var(--accent); 
+            margin-bottom: 20px; 
+            font-size: 2.2rem; 
+        }
+        
+        #puzzle-container { 
+            display: grid; 
+            grid-template-columns: repeat(3, 110px); 
+            grid-template-rows: repeat(3, 110px); 
+            gap: 10px; 
+            border: 12px solid #fff; 
+            box-shadow: 0 15px 35px rgba(255, 133, 161, 0.15); 
+            background: #fff; 
+            border-radius: 25px; /* Extra rounded for softness */
+        }
+        
+        @media (min-width: 600px) { 
+            #puzzle-container { 
+                grid-template-columns: repeat(3, 160px); 
+                grid-template-rows: repeat(3, 160px); 
+            } 
+        }
+        
+        .tile { 
+            width: 100%; 
+            height: 100%; 
+            background-size: 300% 300%; 
+            cursor: pointer; 
+            border-radius: 15px; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border: 1px solid rgba(0,0,0,0.03); 
+        }
+        
+        .tile:hover { transform: scale(1.04); z-index: 5; }
+        .selected { border: 5px solid var(--primary); box-sizing: border-box; filter: brightness(1.05); }
+        
+        /* Modal Customization */
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            background: white; 
+            padding: 35px; 
+            border-radius: 30px; 
+            box-shadow: 0 30px 60px rgba(0,0,0,0.12); 
+            z-index: 100; 
+            border: 1px solid #ffe3e8; 
+            width: 85%; 
+            max-width: 450px; 
+        }
+        
+        .modal h2 { 
+            font-family: 'Dancing Script', cursive;
+            color: var(--primary); 
+            font-size: 2rem;
+            margin-top: 0; 
+        }
+        
+        .modal p { 
+            color: var(--text); 
+            line-height: 1.7; 
+            font-size: 1.05rem; 
+            font-weight: 400;
+        }
+        
+        #overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(255, 245, 246, 0.8); /* Tinted transparent overlay */
+            z-index: 90; 
+            backdrop-filter: blur(6px); 
+        }
+        
+        /* Rounded Mellow Buttons */
+        .btn { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 14px 30px; 
+            border-radius: 50px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1rem; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 8px 15px rgba(255, 133, 161, 0.3); 
+        }
+        
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 12px 20px rgba(255, 133, 161, 0.4); }
+        
+        .no-btn { background: #d1d1d1; position: absolute; }
+        .heart-icon { color: var(--primary); font-size: 1.8rem; margin-top: 15px; }
+
+        /* Floating Hearts */
+        #heart-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .floating-heart { position: absolute; bottom: -20px; color: var(--primary); opacity: 0.4; animation: floatUp linear forwards; }
+        @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 0.4; } 100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
+    </style>
+</head>
+<body>
+
+    <div id="heart-container"></div>
+
+    <h1>Little glimpses of us.. ❤️💕</h1>
+
+    <div id="puzzle-container"></div>
+    <div id="overlay"></div>
+
+    <div id="message-modal" class="modal">
+        <h2>Yay! You did it!</h2>
+        <p id="final-message"></p>
+        <button class="btn" onclick="openConsent()">Sign a consent</button>
+        <div class="heart-icon">🥹</div>
+    </div>
+
+    <div id="consent-modal" class="modal">
+        <h2>One more thing...</h2>
+        <p style="font-size: 1.3rem; font-weight: 600;">will you be mine forever? 🥹</p>
+        <div style="position: relative; height: 120px; margin-top: 20px;">
+            <button id="yes-btn" class="btn" onclick="showFinal()">Yes, forever</button>
+            <button id="no-btn" class="btn no-btn">No</button>
+        </div>
+    </div>
+
+    <div id="final-modal" class="modal">
+        <h2>My heart is full 🥰</h2>
+        <p style="font-size: 1.2rem;">I knew my baby would never say no to this 🥰</p>
+        <button class="btn" onclick="location.reload()">Replay</button>
+    </div>
+
+    <script>
+        const IMAGE_URL = 'https://i.postimg.cc/LhDPzXGp/Shurya-3.jpg'; 
+        const SUCCESS_MESSAGE = "Congratulations you won a lifetime worth of apologies and endless \" I love you's ❤️\"..I'm sorry babu..I'm sorry if sometimes I'm too much or too less available for you..but i swear i try my best to be the best verisons of ourselves and not to let our \"us\" fade away..I LOVE YOUU SOO MUCH MY BABYYY!! 🥹";
+
+        const container = document.getElementById('puzzle-container');
+        const overlay = document.getElementById('overlay');
+        const noBtn = document.getElementById('no-btn');
+        let tiles = [];
+        let selectedTile = null;
+        let noBtnScale = 1;
+
+        // Floating Hearts
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerHTML = ['❤️', '🌸', '✨', '💖'][Math.floor(Math.random()*4)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 3 + 4 + 's';
+            heart.style.fontSize = Math.random() * 1 + 0.8 + 'rem';
+            heartContainer.appendChild(heart);
+            setTimeout(() => heart.remove(), 7000);
+        }
+        const heartContainer = document.getElementById('heart-container');
+        setInterval(createHeart, 400);
+
+        // Puzzle Logic
+        function initPuzzle() {
+            let positions = Array.from({length: 9}, (_, i) => i);
+            let shuffled = [...positions].sort(() => Math.random() - 0.5);
+            shuffled.forEach((pos, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'tile';
+                tile.dataset.correctPos = pos;
+                tile.style.order = index;
+                const x = (pos % 3) * 50;
+                const y = Math.floor(pos / 3) * 50;
+                tile.style.backgroundImage = `url(${IMAGE_URL})`;
+                tile.style.backgroundPosition = `${x}% ${y}%`;
+                tile.addEventListener('click', () => handleTileClick(tile));
+                container.appendChild(tile);
+                tiles.push(tile);
+            });
+        }
+
+        function handleTileClick(tile) {
+            if (!selectedTile) {
+                selectedTile = tile;
+                tile.classList.add('selected');
+            } else {
+                if (selectedTile === tile) {
+                    selectedTile.classList.remove('selected');
+                    selectedTile = null;
+                    return;
+                }
+                const tempOrder = selectedTile.style.order;
+                selectedTile.style.order = tile.style.order;
+                tile.style.order = tempOrder;
+                selectedTile.classList.remove('selected');
+                selectedTile = null;
+                setTimeout(checkWin, 400);
+            }
+        }
+
+        function checkWin() {
+            const allCorrect = tiles.every(tile => parseInt(tile.style.order) === parseInt(tile.dataset.correctPos));
+            if (allCorrect) {
+                document.getElementById('final-message').innerText = SUCCESS_MESSAGE;
+                document.getElementById('message-modal').style.display = 'block';
+                overlay.style.display = 'block';
+            }
+        }
+
+        function openConsent() {
+            document.getElementById('message-modal').style.display = 'none';
+            document.getElementById('consent-modal').style.display = 'block';
+        }
+
+        function showFinal() {
+            document.getElementById('consent-modal').style.display = 'none';
+            document.getElementById('final-modal').style.display = 'block';
+        }
+
+        function moveNoButton() {
+            const modal = document.getElementById('consent-modal');
+            const rect = modal.getBoundingClientRect();
+            const x = Math.random() * (rect.width - 100) - (rect.width/2) + 50;
+            const y = Math.random() * (rect.height - 100) - (rect.height/2) + 50;
+            noBtnScale -= 0.15;
+            if (noBtnScale < 0.2) noBtnScale = 0.2;
+            noBtn.style.transform = `translate(${x}px, ${y}px) scale(${noBtnScale})`;
+        }
+
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNoButton(); });
+
+        initPuzzle();
+    </script>
+</body>
+</html>
